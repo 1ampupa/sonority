@@ -1,2 +1,2 @@
-flet
-yt-dlp
+flet==0.85.1
+yt-dlp==2026.03.17

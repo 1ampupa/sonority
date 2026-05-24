@@ -1,5 +1,5 @@
 # sonority
-im tried of spotify having 4 ADS in a row 😭 so im making my own music player ;D
+im tired of spotify having 4 ADS in a row 😭 so im making my own music player ;D
 
 ## real description now frfr
 Hello everyone! This is Sonority, a literal song player made by 1ampupa.
@@ -17,7 +17,7 @@ u cant yet, smiley face
 ## how 2 contribute
 to contribute on my project is very ez. you'll need
 - a computer equipped with an IDE and internet
-- Python 3.14 or later (no ancient ahh code, trust me)
+- Python 3.12 or later (no ancient ahh code, trust me)
 - FFmepeg lib (if u dont have it, the whole program would evaporate 😭)
 - 500mg of paracetamol beforehand is RECOMMENDED because reading my code might give you a headache.
 

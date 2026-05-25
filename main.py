@@ -1,48 +1,21 @@
+import logging
 import flet as ft
 
-def main(page: ft.Page):
-    page.title = "Sonority"
-    page.theme_mode = ft.ThemeMode.SYSTEM
+from module.gui.utils import GuiUtils
+from module.gui.songs_list_gui import GuiSongsList
+from module.core.songs.songs_manager import SongManager
 
-    page.window.width = 800
-    page.window.height = 600
-    page.window.resizable = False
-    page.window.maximizable = False
-    page.window.alignment = ft.Alignment.CENTER
+# Logger
 
-    page.fonts = {
-        "IBM Plex": "assets/fonts/IBMPlexSansThai-Regular.ttf",
-        "Anton": "assets/fonts/Anton-Regular.ttf"
-    }
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] (%(name)s) %(message)s",
+    handlers=[logging.StreamHandler()] # prints to console
+)
 
-    page.theme = ft.Theme(font_family="IBM Plex")
-    page.update()
+Logger = logging.getLogger("app.main")
 
-    page.add(
-        ft.Container(
-            content=ft.Column(
-                controls=[
-                    ft.Text(
-                        value="SONORITY", 
-                        size=40, 
-                        font_family="Anton"
-                    ),
-                    ft.Text(
-                        value="ยินดีต้อนรับสู่แอปเล่นเพลงที่ไม่มีโฆษณา 4 ตัวติด 😭", 
-                        size=16
-                    ),
-                    ft.Text(
-                        value="Sonority 2026, Made with Flet, Powered by yt-dlp library.", 
-                        size=16,
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            alignment=ft.Alignment.CENTER,
-            expand=True
-        )
-    )
+Logger.info("Hello world!")
+Logger.info(SongManager.query_all_songs())
 
-print("Hello world!")
-ft.run(main=main)
+ft.run(main=GuiSongsList.song_list)

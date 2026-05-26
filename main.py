@@ -15,7 +15,6 @@ logging.basicConfig(
 
 Logger = logging.getLogger("app.main")
 
-Logger.info("Hello world!")
 Logger.info(SongManager.query_all_songs())
 
 ft.run(main=GuiSongsList.song_list)

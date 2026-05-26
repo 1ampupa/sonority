@@ -1,11 +1,12 @@
+import asyncio
+import logging
 import flet as ft
-import flet_audio as fta
-import logging, asyncio
 
 from pathlib import Path
 from flet import Page
-from flet_audio import Audio, ReleaseMode
+from tinytag import TinyTag
 
+from module.core.songs.song_player import SongPlayer
 from module.core.songs.songs_manager import SongManager
 
 from module.gui.utils import GuiUtils
@@ -13,20 +14,6 @@ from module.gui.utils import GuiUtils
 Logger: logging.Logger = logging.getLogger(__name__)
 
 class GuiSongsList:
-
-    song_player: Audio
-
-    @classmethod
-    def create_song_player(cls, song: Path) -> Audio:
-        song_player: Audio = Audio(
-            src=str(song),
-            autoplay=False,
-            volume=0.1,
-            balance=0,
-            release_mode=fta.ReleaseMode.STOP,
-            on_loaded=lambda _: Logger.info(f"Loaded {str(song)}"),
-        )
-        return song_player
 
     @classmethod
     async def song_list(cls, page: Page) -> None:
@@ -36,20 +23,25 @@ class GuiSongsList:
         title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
         song_list_box: ft.Column = ft.Column(scroll=ft.ScrollMode.ALWAYS)
 
-        async def load(e):
-            try: await cls.song_player.release()
-            except Exception: pass
-            cls.song_player = GuiSongsList.create_song_player(e.control.data["path"])
-            page.services.append(cls.song_player)
-            page.update()
-            await asyncio.sleep(0.1)
-            await cls.song_player.play()
+        async def load_song(e):
+            if SongPlayer.current_song is not None:
+                try:
+                    await SongPlayer.current_song.release()
+                except Exception:
+                    Logger.warning("Failed to release the current song.")
+                    pass
 
-        async def pause():
-            await cls.song_player.pause()
+            try:
+                async def _execute_play(e):
+                    song = SongPlayer(e.control.data["path"])
+                    await asyncio.sleep(0.1)
+                    await song.play()
 
-        async def resume():
-            await cls.song_player.resume()
+                await asyncio.wait_for(_execute_play(e), timeout=1.0)
+            except asyncio.TimeoutError:
+                Logger.error("Can't play this song, took too long to load.")
+            except Exception as e:
+                Logger.error(f"Can't play this song due to {e}")
 
         def get_song_list(e=None):
             song_list_box.controls.clear()
@@ -57,11 +49,20 @@ class GuiSongsList:
             songs: list[Path] = SongManager.query_all_songs()
 
             for index, song in enumerate(songs):
+                metadata = TinyTag.get(song.absolute())
+
+                song_title = metadata.title if metadata.title is not None else song.stem
+
                 song_list_box.controls.append(
-                    ft.TextButton(
-                        content=f"{index+1}: {song.stem}",
-                        data={"path": song.absolute()},
-                        on_click=load
+                    ft.Column(
+                        controls=[
+                            ft.TextButton(
+                                content=f"{index+1}: {song_title}",
+                                data={"path": song.absolute()},
+                                on_click=load_song
+                            )
+                        ],
+                        expand=True
                     )
                 )
             

@@ -2,3 +2,4 @@ flet==0.85.1
 flet_audio==0.85.1
 yt-dlp==2026.03.17
 platformdirs==4.9.6
+tinytag==2.2.1

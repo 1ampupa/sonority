@@ -49,32 +49,33 @@ class GuiSongsList:
             song_list_box.controls.clear()
             page.update()
 
+            await asyncio.sleep(0.1)
+
             start_time: float = time.perf_counter()
 
             songs: list[Path] = SongManager.query_all_songs()
-            songs_button_list: list = []
 
             for index, song in enumerate(songs):
-                metadata = TinyTag.get(song.absolute())
+                metadata = await asyncio.to_thread(TinyTag.get, song.absolute())
 
                 song_title = metadata.title if metadata.title is not None else song.stem
                 song_artist = metadata.artist if metadata.artist is not None else "Unknown"
 
-                songs_button_list.append(
-                    ft.ListTile(
-                        leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
-                        title=f"{song_title}",
-                        subtitle=f"{song_artist}",
-                        subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
-                        autofocus=False,
-                        data={"path": song.absolute()},
-                        on_click=load_song,
-                        expand=1,
-                    )
+                song_button = ft.ListTile(
+                    leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
+                    title=f"{song_title}",
+                    subtitle=f"{song_artist}",
+                    subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
+                    autofocus=False,
+                    data={"path": song.absolute()},
+                    on_click=load_song,
+                    expand=1
                 )
             
-            song_list_box.controls.extend(songs_button_list)
-            song_list_box.update()
+                song_list_box.controls.append(song_button)
+                if (index + 1) % 5 == 0 or (index + 1) == len(songs):
+                    song_list_box.update()
+
             time_elapsed: float = time.perf_counter() - start_time
             Logger.info(f"Successfully created {len(songs)} buttons for {len(songs)} songs, took {time_elapsed:.2f} seconds")
 

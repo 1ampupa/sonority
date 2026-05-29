@@ -1,3 +1,4 @@
+import math
 import time
 import asyncio
 import logging
@@ -55,12 +56,31 @@ class GuiSongsList:
 
             songs: list[Path] = SongManager.query_all_songs()
             if len(songs) == 0:
-                song_list_box.controls.append(ft.Text(
-                    value="There's no song available.",
-                    size=20,
-                    weight=ft.FontWeight.BOLD,
-                    align=ft.Alignment.CENTER
-                ))
+                song_list_box.controls.append(
+                    ft.Column(
+                        controls=[
+                            ft.Text(
+                                value="Aw shucks...",
+                                size=30,
+                                weight=ft.FontWeight.BOLD,
+                                align=ft.Alignment.CENTER
+                            ),
+                            ft.Text(
+                                value="There's no song available.",
+                                size=20,
+                                weight=ft.FontWeight.BOLD,
+                                align=ft.Alignment.CENTER
+                            ),
+                            ft.Text(
+                                value="Try adding a music or look up in the search bar! (even if we haven't implement it yet 😭)",
+                                size=16,
+                                align=ft.Alignment.CENTER
+                            )
+                        ],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        expand=True
+                    )
+                )
                 refresh_button.disabled = False
                 page.update()
                 return
@@ -71,13 +91,20 @@ class GuiSongsList:
 
                     song_title = metadata.title if metadata.title is not None else song.stem
                     song_artist = metadata.artist if metadata.artist is not None else "Unknown"
+                    song_duration = metadata.duration if metadata.duration is not None else 0
+
+                    minute = math.floor(song_duration / 60)
+                    second = math.floor(song_duration % 60)
+                    if minute < 10: minute = f"0{minute}"
+                    if second < 10: second = f"0{second}"
 
                     song_button = ft.ListTile(
+                        autofocus=False,
                         leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
                         title=f"{song_title}",
                         subtitle=f"{song_artist}",
                         subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
-                        autofocus=False,
+                        trailing=ft.Text(value=f"{minute}:{second}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.LEFT),
                         data={"path": song.absolute()},
                         on_click=load_song,
                         expand=1

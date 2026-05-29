@@ -23,81 +23,75 @@ class GuiSongsList:
 
         # Page Elements
         title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
-        song_list_box: ft.Column = ft.Column(scroll=ft.ScrollMode.ALWAYS)
+        song_list_box: ft.Column = ft.Column()
 
-        async def load_song(e=None):
-            if e is None: return
-            if SongPlayer.current_song is not None:
-                try:
-                    await SongPlayer.current_song.release()
-                except Exception:
-                    pass
+        # Handle empty song list
+        async def display_empty_list() -> None:
+            song_list_box.controls.append(
+                ft.Column(
+                    controls=[
+                        ft.Text(
+                            value="Aw shucks...",
+                            size=30,
+                            weight=ft.FontWeight.BOLD,
+                            align=ft.Alignment.CENTER
+                        ),
+                        ft.Text(
+                            value="There's no song available.",
+                            size=20,
+                            weight=ft.FontWeight.BOLD,
+                            align=ft.Alignment.CENTER
+                        ),
+                        ft.Text(
+                            value="Try adding a music or look up in the search bar! (even if we haven't implement it yet 😭)",
+                            size=16,
+                            align=ft.Alignment.CENTER
+                        )
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    expand=True
+                )
+            )
 
-            try:
-                async def _execute_play(e):
-                    song = SongPlayer(e.control.data["path"])
-                    await asyncio.sleep(0.25)
-                    await song.play()
-
-                await asyncio.wait_for(_execute_play(e), timeout=2.0)
-            except asyncio.TimeoutError:
-                Logger.error("Can't play this song, took too long to load.")
-            except Exception as e:
-                Logger.error(f"Can't play this song due to {e}")
-
-        async def create_song_list(e=None):
+        # Create song list
+        async def create_song_list(e=None) -> None:
+            # Clear old list
             refresh_button.disabled = True
             song_list_box.controls.clear()
             page.update()
 
             await asyncio.sleep(0.1)
 
+            # Performance counter
             start_time: float = time.perf_counter()
 
+            # Get all songs as a song list
             songs: list[Path] = SongManager.query_all_songs()
+            
+            # Display empty list if there's no song in the list
             if len(songs) == 0:
-                song_list_box.controls.append(
-                    ft.Column(
-                        controls=[
-                            ft.Text(
-                                value="Aw shucks...",
-                                size=30,
-                                weight=ft.FontWeight.BOLD,
-                                align=ft.Alignment.CENTER
-                            ),
-                            ft.Text(
-                                value="There's no song available.",
-                                size=20,
-                                weight=ft.FontWeight.BOLD,
-                                align=ft.Alignment.CENTER
-                            ),
-                            ft.Text(
-                                value="Try adding a music or look up in the search bar! (even if we haven't implement it yet 😭)",
-                                size=16,
-                                align=ft.Alignment.CENTER
-                            )
-                        ],
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        expand=True
-                    )
-                )
+                await display_empty_list()
                 refresh_button.disabled = False
                 page.update()
                 return
 
+            # Loop through song list
             for index, song in enumerate(songs):
                 try:
+                    # Fetch file's metadata
                     metadata = await asyncio.to_thread(TinyTag.get, song.absolute())
 
                     song_title = metadata.title if metadata.title is not None else song.stem
                     song_artist = metadata.artist if metadata.artist is not None else "Unknown"
                     song_duration = metadata.duration if metadata.duration is not None else 0
 
+                    # Formatting duration string
                     minute = math.floor(song_duration / 60)
                     second = math.floor(song_duration % 60)
                     if minute < 10: minute = f"0{minute}"
                     if second < 10: second = f"0{second}"
 
+                    # Create a song list tile
                     song_button = ft.ListTile(
                         autofocus=False,
                         leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
@@ -106,7 +100,7 @@ class GuiSongsList:
                         subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
                         trailing=ft.Text(value=f"{minute}:{second}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.LEFT),
                         data={"path": song.absolute()},
-                        on_click=load_song,
+                        on_click=SongPlayer.play_song,
                         expand=1
                     )
                 
@@ -114,13 +108,15 @@ class GuiSongsList:
                 except Exception:
                     Logger.error(f"Failed to create a button for {song.stem}")
                     pass
-
+                
+                # Update the list every 5 loaded songs
                 if (index + 1) % 5 == 0 or (index + 1) == len(songs):
                     song_list_box.update()
 
             time_elapsed: float = time.perf_counter() - start_time
             Logger.info(f"Successfully created {len(songs)} buttons for {len(songs)} songs, took {time_elapsed:.2f} seconds")
-           
+
+            # Clean up
             refresh_button.disabled = False
             page.update()
 
@@ -154,4 +150,3 @@ class GuiSongsList:
         )
 
         await create_song_list()
-        await load_song()

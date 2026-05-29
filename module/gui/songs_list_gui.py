@@ -30,22 +30,22 @@ class GuiSongsList:
                 try:
                     await SongPlayer.current_song.release()
                 except Exception:
-                    Logger.warning("Failed to release the current song.")
                     pass
 
             try:
                 async def _execute_play(e):
                     song = SongPlayer(e.control.data["path"])
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.25)
                     await song.play()
 
-                await asyncio.wait_for(_execute_play(e), timeout=1.0)
+                await asyncio.wait_for(_execute_play(e), timeout=2.0)
             except asyncio.TimeoutError:
                 Logger.error("Can't play this song, took too long to load.")
             except Exception as e:
                 Logger.error(f"Can't play this song due to {e}")
 
-        async def get_song_list(e=None):
+        async def create_song_list(e=None):
+            refresh_button.disabled = True
             song_list_box.controls.clear()
             page.update()
 
@@ -54,33 +54,51 @@ class GuiSongsList:
             start_time: float = time.perf_counter()
 
             songs: list[Path] = SongManager.query_all_songs()
+            if len(songs) == 0:
+                song_list_box.controls.append(ft.Text(
+                    value="There's no song available.",
+                    size=20,
+                    weight=ft.FontWeight.BOLD,
+                    align=ft.Alignment.CENTER
+                ))
+                refresh_button.disabled = False
+                page.update()
+                return
 
             for index, song in enumerate(songs):
-                metadata = await asyncio.to_thread(TinyTag.get, song.absolute())
+                try:
+                    metadata = await asyncio.to_thread(TinyTag.get, song.absolute())
 
-                song_title = metadata.title if metadata.title is not None else song.stem
-                song_artist = metadata.artist if metadata.artist is not None else "Unknown"
+                    song_title = metadata.title if metadata.title is not None else song.stem
+                    song_artist = metadata.artist if metadata.artist is not None else "Unknown"
 
-                song_button = ft.ListTile(
-                    leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
-                    title=f"{song_title}",
-                    subtitle=f"{song_artist}",
-                    subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
-                    autofocus=False,
-                    data={"path": song.absolute()},
-                    on_click=load_song,
-                    expand=1
-                )
-            
-                song_list_box.controls.append(song_button)
+                    song_button = ft.ListTile(
+                        leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
+                        title=f"{song_title}",
+                        subtitle=f"{song_artist}",
+                        subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
+                        autofocus=False,
+                        data={"path": song.absolute()},
+                        on_click=load_song,
+                        expand=1
+                    )
+                
+                    song_list_box.controls.append(song_button)
+                except Exception:
+                    Logger.error(f"Failed to create a button for {song.stem}")
+                    pass
+
                 if (index + 1) % 5 == 0 or (index + 1) == len(songs):
                     song_list_box.update()
 
             time_elapsed: float = time.perf_counter() - start_time
             Logger.info(f"Successfully created {len(songs)} buttons for {len(songs)} songs, took {time_elapsed:.2f} seconds")
+           
+            refresh_button.disabled = False
+            page.update()
 
         refresh_button: ft.Button = ft.Button(
-            content="Refresh", icon=ft.Icons.REFRESH_ROUNDED, on_click=get_song_list,
+            content="Refresh", icon=ft.Icons.REFRESH_ROUNDED, on_click=create_song_list,
             align=ft.Alignment.CENTER_RIGHT,
             expand=True
         )
@@ -104,9 +122,9 @@ class GuiSongsList:
                     ]
                 ),
                 expand=True,
-                minimum_padding = 10
+                minimum_padding = 15
             )
         )
 
-        await get_song_list()
+        await create_song_list()
         await load_song()

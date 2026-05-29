@@ -1,3 +1,4 @@
+import time
 import asyncio
 import logging
 import flet as ft
@@ -23,7 +24,8 @@ class GuiSongsList:
         title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
         song_list_box: ft.Column = ft.Column(scroll=ft.ScrollMode.ALWAYS)
 
-        async def load_song(e):
+        async def load_song(e=None):
+            if e is None: return
             if SongPlayer.current_song is not None:
                 try:
                     await SongPlayer.current_song.release()
@@ -43,30 +45,38 @@ class GuiSongsList:
             except Exception as e:
                 Logger.error(f"Can't play this song due to {e}")
 
-        def get_song_list(e=None):
+        async def get_song_list(e=None):
             song_list_box.controls.clear()
+            page.update()
+
+            start_time: float = time.perf_counter()
 
             songs: list[Path] = SongManager.query_all_songs()
+            songs_button_list: list = []
 
             for index, song in enumerate(songs):
                 metadata = TinyTag.get(song.absolute())
 
                 song_title = metadata.title if metadata.title is not None else song.stem
+                song_artist = metadata.artist if metadata.artist is not None else "Unknown"
 
-                song_list_box.controls.append(
-                    ft.Column(
-                        controls=[
-                            ft.TextButton(
-                                content=f"{index+1}: {song_title}",
-                                data={"path": song.absolute()},
-                                on_click=load_song
-                            )
-                        ],
-                        expand=True
+                songs_button_list.append(
+                    ft.ListTile(
+                        leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
+                        title=f"{song_title}",
+                        subtitle=f"{song_artist}",
+                        subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
+                        autofocus=False,
+                        data={"path": song.absolute()},
+                        on_click=load_song,
+                        expand=1,
                     )
                 )
             
+            song_list_box.controls.extend(songs_button_list)
             song_list_box.update()
+            time_elapsed: float = time.perf_counter() - start_time
+            Logger.info(f"Successfully created {len(songs)} buttons for {len(songs)} songs, took {time_elapsed:.2f} seconds")
 
         refresh_button: ft.Button = ft.Button(
             content="Refresh", icon=ft.Icons.REFRESH_ROUNDED, on_click=get_song_list,
@@ -75,14 +85,27 @@ class GuiSongsList:
         )
         
         page.add(
-            ft.Row(
-                controls=[
-                    title_text,
-                    refresh_button
-                ]
-            ),
-            ft.Divider(height=20),
-            song_list_box
+            ft.SafeArea(
+                content=ft.Column(
+                    controls=[
+                        ft.Row(
+                            controls=[
+                                title_text,
+                                refresh_button
+                            ]
+                        ),
+                        ft.Divider(height=20),
+                        ft.ListView(
+                            controls=[song_list_box],
+                            expand=True,
+                            scroll=ft.ScrollMode.AUTO
+                        )
+                    ]
+                ),
+                expand=True,
+                minimum_padding = 10
+            )
         )
 
-        get_song_list()
+        await get_song_list()
+        await load_song()

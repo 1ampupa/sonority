@@ -1,8 +1,9 @@
+import time
 import logging
 from pathlib import Path
 from module.core.utils.app_data import AppData
 
-logger: logging.Logger = logging.getLogger(__name__)
+Logger: logging.Logger = logging.getLogger(__name__)
 
 class SongManager:
     
@@ -13,6 +14,7 @@ class SongManager:
     @classmethod
     def query_all_songs(cls) -> list:
         cls.songs.clear()
+        start_time: float = time.perf_counter()
         try:
             data_folder: Path = AppData.create_app_data_folder()
             songs: list[Path] = [
@@ -20,6 +22,8 @@ class SongManager:
                 if song.is_file() and song.suffix.lower() in cls.AUDIO_EXTENSIONS
             ]
             cls.songs = songs
+            time_elapsed: float = time.perf_counter() - start_time
+            Logger.info(f"Successfully queried {len(songs)} songs, took {(time_elapsed*10e3):.2f} ms")
             return songs
         except Exception as e:
             logging.error(e)

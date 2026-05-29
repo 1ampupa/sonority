@@ -12,10 +12,13 @@ from module.core.songs.song_player import SongPlayer
 from module.core.songs.songs_manager import SongManager
 
 from module.gui.utils import GuiUtils
+from module.gui.song_player_gui import GuiSongPlayer
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
 class GuiSongsList:
+
+    song_player_column: GuiSongPlayer = GuiSongPlayer()
 
     @classmethod
     async def song_list(cls, page: Page) -> None:
@@ -24,6 +27,7 @@ class GuiSongsList:
         # Page Elements
         title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
         song_list_box: ft.Column = ft.Column()
+        song_list_box.spacing = 10
 
         # Handle empty song list
         async def display_empty_list() -> None:
@@ -100,7 +104,7 @@ class GuiSongsList:
                         subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
                         trailing=ft.Text(value=f"{minute}:{second}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.LEFT),
                         data={"path": song.absolute()},
-                        on_click=SongPlayer.play_song,
+                        on_click=lambda e: page.run_task(SongPlayer.play_song, page, cls.song_player_column, e),
                         expand=1
                     )
                 
@@ -125,7 +129,7 @@ class GuiSongsList:
             align=ft.Alignment.CENTER_RIGHT,
             expand=True
         )
-        
+
         page.add(
             ft.SafeArea(
                 content=ft.Column(
@@ -140,8 +144,10 @@ class GuiSongsList:
                         ft.ListView(
                             controls=[song_list_box],
                             expand=True,
-                            scroll=ft.ScrollMode.AUTO
-                        )
+                            scroll=ft.ScrollMode.AUTO,
+                            spacing=0
+                        ),
+                        cls.song_player_column
                     ]
                 ),
                 expand=True,

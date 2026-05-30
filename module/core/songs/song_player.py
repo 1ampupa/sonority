@@ -77,6 +77,14 @@ class SongPlayer:
             await song_player_column.update_pause_resume_button(cls)
 
     @classmethod
-    async def seek(cls):
+    async def seek_ahead_5(cls):
         if cls._active_audio is not None:
-            await cls._active_audio.seek(5)
+            current_position = await cls._active_audio.get_current_position()
+            if current_position is not None:
+                await cls._active_audio.seek(5)
+                cls._active_audio.update()
+
+    @classmethod
+    async def change_time(cls, position):
+        if cls._active_audio is not None:
+            await cls._active_audio.seek(ft.Duration(seconds=position))

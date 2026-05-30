@@ -1,6 +1,5 @@
 import math
 import logging
-import asyncio
 import flet as ft
 import flet_audio as fta
 
@@ -62,8 +61,13 @@ class GuiSongPlayer(Column):
             min=0,
             max=1,
             width=300,
-            padding=0
+            padding=0,
+            on_change_start=self.try_update_time,
+            on_change_end=lambda _: self._page.run_task(self.update_time)
         )
+
+        # Allow the slider to be automatically changed when the song position changes
+        self.allow_automatic_slider = True
 
         # Pause/Resume Button
         self.pause_resume_button = ft.IconButton(
@@ -175,7 +179,8 @@ class GuiSongPlayer(Column):
     async def update_infomation(self, e: fta.AudioPositionChangeEvent):
         try:
             song_duration = e.position / 1000
-            self.slider.value = song_duration
+            if self.allow_automatic_slider:
+                self.slider.value = song_duration
 
             # Formatting duration string
             minute = math.floor(song_duration / 60)
@@ -199,3 +204,13 @@ class GuiSongPlayer(Column):
             pass
         finally:
             self.update()
+
+    def try_update_time(self):
+        self.allow_automatic_slider = False
+        self.update()
+
+    async def update_time(self):
+        if SongPlayer._active_audio is not None and self.slider.value is not None:
+            await SongPlayer.change_time(self.slider.value)
+        self.allow_automatic_slider = True
+        self.update()

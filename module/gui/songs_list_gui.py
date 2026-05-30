@@ -18,16 +18,16 @@ Logger: logging.Logger = logging.getLogger(__name__)
 
 class GuiSongsList:
 
-    song_player_column: GuiSongPlayer = GuiSongPlayer()
-
     @classmethod
     async def song_list(cls, page: Page) -> None:
         GuiUtils.create_default_page(page)
 
+        song_player_column: GuiSongPlayer = GuiSongPlayer(page)
+
         # Page Elements
-        title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
+        title_text: ft.Text = ft.Text(value="MY SONG",size=60,font_family="Anton")
         song_list_box: ft.Column = ft.Column()
-        song_list_box.spacing = 0
+        song_list_box.spacing = 5
 
         # Handle empty song list
         async def display_empty_list() -> None:
@@ -86,7 +86,7 @@ class GuiSongsList:
                     metadata = await asyncio.to_thread(TinyTag.get, song.absolute())
 
                     song_title = metadata.title if metadata.title is not None else song.stem
-                    song_artist = metadata.artist if metadata.artist is not None else "Unknown"
+                    song_artist = metadata.artist if metadata.artist is not None else "Local file"
                     song_duration = metadata.duration if metadata.duration is not None else 0
 
                     # Formatting duration string
@@ -99,12 +99,12 @@ class GuiSongsList:
                     song_button = ft.ListTile(
                         autofocus=False,
                         leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
-                        title=f"{song_title}",
-                        subtitle=f"{song_artist}",
-                        subtitle_text_style=ft.TextStyle(color=ft.Colors.GREY_400),
+                        title=song_title,
+                        subtitle=song_artist,
+                        subtitle_text_style=ft.TextStyle(color=ft.Colors.SECONDARY),
                         trailing=ft.Text(value=f"{minute}:{second}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.LEFT),
                         data={"path": song.absolute()},
-                        on_click=lambda e: page.run_task(SongPlayer.play_song, page, cls.song_player_column, e),
+                        on_click=lambda e: page.run_task(SongPlayer.play_song, page, song_player_column, e),
                         expand=1
                     )
                 
@@ -146,7 +146,7 @@ class GuiSongsList:
                             expand=True,
                             scroll=ft.ScrollMode.AUTO
                         ),
-                        cls.song_player_column
+                        song_player_column
                     ]
                 ),
                 expand=True,

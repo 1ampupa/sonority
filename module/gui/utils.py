@@ -22,5 +22,12 @@ class GuiUtils:
             "Anton": "assets/fonts/Anton-Regular.ttf"
         }
 
-        page.theme = ft.Theme(font_family="IBM Plex")
+        app_colour: ft.ColorScheme = ft.ColorScheme(
+            primary="#7D5EFF",
+            secondary="#888888",
+            surface="#151515",
+            surface_container="#1F1F1F"
+        )
+
+        page.theme = ft.Theme(font_family="IBM Plex", color_scheme=app_colour)
         page.update()

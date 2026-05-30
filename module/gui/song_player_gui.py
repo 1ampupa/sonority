@@ -1,16 +1,19 @@
 import math
 import logging
+import asyncio
 import flet as ft
 import flet_audio as fta
 
 from flet import Column
+from module.core.songs.song_player import SongPlayer
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
 class GuiSongPlayer(Column):
     
-    def __init__(self) -> None:
+    def __init__(self, page: ft.Page) -> None:
         super().__init__()
+        self._page = page
         
         # Set the default to False on the startup
         self.visible = False
@@ -29,7 +32,7 @@ class GuiSongPlayer(Column):
         # Song Artist
         self.artist_text = ft.Text(
             value="Song artist",
-            style=ft.TextStyle(color=ft.Colors.GREY_400),
+            style=ft.TextStyle(color=ft.Colors.SECONDARY),
             size=12,
             max_lines=1,
             overflow=ft.TextOverflow.ELLIPSIS
@@ -67,12 +70,13 @@ class GuiSongPlayer(Column):
             icon=ft.Icon(ft.Icons.PAUSE_CIRCLE_FILLED),
             icon_size=40,
             padding=0,
-            align=ft.Alignment.CENTER
+            align=ft.Alignment.CENTER,
+            on_click=lambda _: self._page.run_task(SongPlayer.toggle_pause_resume, self)
         )
 
         # Next Track Button
         self.next_track_button = ft.IconButton(
-            icon=ft.Icon(ft.Icons.ARROW_RIGHT),
+            icon=ft.Icon(ft.Icons.SKIP_NEXT),
             icon_size=30,
             padding=0,
             align=ft.Alignment.CENTER
@@ -80,7 +84,7 @@ class GuiSongPlayer(Column):
 
         # Previous Track Button
         self.previous_track_button = ft.IconButton(
-            icon=ft.Icon(ft.Icons.ARROW_LEFT),
+            icon=ft.Icon(ft.Icons.SKIP_PREVIOUS),
             icon_size=30,
             padding=0,
             align=ft.Alignment.CENTER
@@ -119,7 +123,7 @@ class GuiSongPlayer(Column):
                                         self.next_track_button
                                     ],
                                     height=40,
-                                    spacing=5,
+                                    spacing=15,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     vertical_alignment=ft.CrossAxisAlignment.CENTER       
                                 ),
@@ -168,7 +172,7 @@ class GuiSongPlayer(Column):
         self.visible = False
         self.update()
     
-    async def update_infomation(self, current_song, e: fta.AudioPositionChangeEvent):
+    async def update_infomation(self, e: fta.AudioPositionChangeEvent):
         try:
             song_duration = e.position / 1000
             self.slider.value = song_duration
@@ -184,4 +188,14 @@ class GuiSongPlayer(Column):
             pass
         finally:
             self.update()
-        
+    
+    async def update_pause_resume_button(self, audio: SongPlayer):
+        try:
+            if audio.song_state is fta.AudioState.STOPPED:
+                self.pause_resume_button.icon = ft.Icon(ft.Icons.PLAY_CIRCLE_FILL)
+            elif audio.song_state is fta.AudioState.PLAYING:
+                self.pause_resume_button.icon = ft.Icon(ft.Icons.PAUSE_CIRCLE_FILLED)
+        except Exception:
+            pass
+        finally:
+            self.update()

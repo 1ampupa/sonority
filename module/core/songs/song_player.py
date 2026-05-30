@@ -45,8 +45,9 @@ class SongPlayer:
 
                 cls._active_audio = Audio(
                     src=str(path.absolute()),
-                    volume=0.1,  
-                    release_mode=ReleaseMode.STOP
+                    volume=0.25,  
+                    release_mode=ReleaseMode.STOP,
+                    on_position_change=lambda e: page.run_task(song_player_column.update_infomation, cls.current_song, e)
                 )
                 
                 await asyncio.sleep(0.1)

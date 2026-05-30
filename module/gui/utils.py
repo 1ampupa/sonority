@@ -9,10 +9,12 @@ class GuiUtils:
         page.title = page_name
         page.theme_mode = ft.ThemeMode.SYSTEM
 
-        page.window.width = 800
-        page.window.height = 600
-        page.window.resizable = False
-        page.window.maximizable = False
+        page.window.width = 1000
+        page.window.height = 750
+        page.window.min_width = 1000
+        page.window.min_height = 750
+        page.window.resizable = True
+        page.window.maximizable = True
         page.window.alignment = ft.Alignment.CENTER
 
         page.fonts = {

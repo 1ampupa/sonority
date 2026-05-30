@@ -27,7 +27,7 @@ class GuiSongsList:
         # Page Elements
         title_text: ft.Text = ft.Text(value="YOUR SONG",size=60,font_family="Anton")
         song_list_box: ft.Column = ft.Column()
-        song_list_box.spacing = 10
+        song_list_box.spacing = 0
 
         # Handle empty song list
         async def display_empty_list() -> None:
@@ -144,8 +144,7 @@ class GuiSongsList:
                         ft.ListView(
                             controls=[song_list_box],
                             expand=True,
-                            scroll=ft.ScrollMode.AUTO,
-                            spacing=0
+                            scroll=ft.ScrollMode.AUTO
                         ),
                         cls.song_player_column
                     ]

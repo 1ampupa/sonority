@@ -62,7 +62,7 @@ class GuiSongPlayer(Column):
             max=1,
             width=300,
             padding=0,
-            on_change_start=self.try_update_time,
+            on_change_start=self.use_manual_slider,
             on_change_end=lambda _: self._page.run_task(self.update_time)
         )
 
@@ -94,6 +94,24 @@ class GuiSongPlayer(Column):
             align=ft.Alignment.CENTER
         )
 
+        # Seek skip 5 second Button
+        self.seek_skip_button = ft.IconButton(
+            icon=ft.Icon(ft.Icons.KEYBOARD_ARROW_RIGHT),
+            icon_size=30,
+            padding=0,
+            align=ft.Alignment.CENTER,
+            on_click=lambda _: self._page.run_task(self.seek, True)
+        )
+
+        # Seek rewind 5 second Button
+        self.seek_rewind_button = ft.IconButton(
+            icon=ft.Icon(ft.Icons.KEYBOARD_ARROW_LEFT),
+            icon_size=30,
+            padding=0,
+            align=ft.Alignment.CENTER,
+            on_click=lambda _: self._page.run_task(self.seek, False)
+        )
+
         self.controls.append(
             ft.Container(
                 bgcolor=ft.Colors.SURFACE_CONTAINER_LOW,
@@ -123,7 +141,9 @@ class GuiSongPlayer(Column):
                                 ft.Row(
                                     controls=[
                                         self.previous_track_button,
+                                        self.seek_rewind_button,
                                         self.pause_resume_button,
+                                        self.seek_skip_button,
                                         self.next_track_button
                                     ],
                                     height=40,
@@ -205,12 +225,14 @@ class GuiSongPlayer(Column):
         finally:
             self.update()
 
-    def try_update_time(self):
+    def use_manual_slider(self):
         self.allow_automatic_slider = False
-        self.update()
 
     async def update_time(self):
         if SongPlayer._active_audio is not None and self.slider.value is not None:
             await SongPlayer.change_time(self.slider.value)
         self.allow_automatic_slider = True
-        self.update()
+
+    async def seek(self, skip: bool = True):
+        if SongPlayer._active_audio is not None:
+            await SongPlayer.seek(skip)

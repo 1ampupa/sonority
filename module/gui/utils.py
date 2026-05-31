@@ -7,7 +7,7 @@ class GuiUtils:
     @staticmethod
     def create_default_page(page: Page, page_name: str="Sonority") -> None:
         page.title = page_name
-        page.theme_mode = ft.ThemeMode.SYSTEM
+        page.theme_mode = ft.ThemeMode.DARK
 
         page.window.width = 1000
         page.window.height = 750
@@ -24,8 +24,10 @@ class GuiUtils:
 
         app_colour: ft.ColorScheme = ft.ColorScheme(
             primary="#7D5EFF",
+            on_primary="#FFFFFF",
             secondary="#888888",
             surface="#151515",
+            on_surface="#FFFFFF",
             surface_container="#1F1F1F"
         )
 

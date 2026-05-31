@@ -5,13 +5,18 @@ import flet_audio as fta
 
 from pathlib import Path
 from tinytag import TinyTag
-from flet_audio import Audio, ReleaseMode
+from flet_audio import Audio
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
 class SongPlayer:
     _active_audio: Audio | None = None
-    
+
+    # Audio Settings
+    volume = 0.25
+    repeat_mode: fta.ReleaseMode = fta.ReleaseMode.LOOP # STOP = No loop, LOOP = loop 1
+    shuffle: bool = False
+
     current_song: 'SongPlayer | None' = None
     song_path: Path | None = None
     song_title: str = ""
@@ -47,8 +52,8 @@ class SongPlayer:
 
                 cls._active_audio = Audio(
                     src=str(path.absolute()),
-                    volume=0.25,  
-                    release_mode=ReleaseMode.LOOP,
+                    volume=cls.volume,  
+                    release_mode=cls.repeat_mode,
                     on_position_change=lambda e: page.run_task(song_player_column.update_infomation, e)
                 )
                 
@@ -56,7 +61,7 @@ class SongPlayer:
                 await cls._active_audio.play()
                 cls.song_state = fta.AudioState.PLAYING
 
-                await song_player_column.update_pause_resume_button(cls)
+                await song_player_column.update_playback_buttons(cls)
                 await song_player_column.show(cls.current_song)
 
             await asyncio.wait_for(_execute_play(e), timeout=2.0)
@@ -74,7 +79,7 @@ class SongPlayer:
             elif cls.song_state is fta.AudioState.STOPPED:
                 cls.song_state = fta.AudioState.PLAYING
                 await cls._active_audio.resume()
-            await song_player_column.update_pause_resume_button(cls)
+            await song_player_column.update_playback_buttons(cls)
 
     @classmethod
     async def seek(cls, skip: bool = True):
@@ -91,3 +96,22 @@ class SongPlayer:
     async def change_time(cls, position):
         if cls._active_audio is not None:
             await cls._active_audio.seek(ft.Duration(seconds=position))
+
+    @classmethod
+    async def toggle_shuffle(cls, song_player_column):
+        cls.shuffle = not cls.shuffle
+        await song_player_column.update_playback_buttons(cls)
+
+    @classmethod
+    async def toggle_loop_mode(cls, song_player_column):
+        match cls.repeat_mode:
+            case fta.ReleaseMode.LOOP:
+                cls.repeat_mode = fta.ReleaseMode.STOP
+            case fta.ReleaseMode.STOP:
+                cls.repeat_mode = fta.ReleaseMode.LOOP
+
+        if cls._active_audio is not None:
+            cls._active_audio.release_mode = cls.repeat_mode
+            cls._active_audio.update()
+            
+        await song_player_column.update_playback_buttons(cls)

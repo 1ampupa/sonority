@@ -36,18 +36,21 @@ class GuiSongsList:
                     controls=[
                         ft.Text(
                             value="Aw shucks...",
+                            color=ft.Colors.ERROR,
                             size=30,
                             weight=ft.FontWeight.BOLD,
                             align=ft.Alignment.CENTER
                         ),
                         ft.Text(
                             value="There's no song available.",
+                            color=ft.Colors.ON_PRIMARY,
                             size=20,
                             weight=ft.FontWeight.BOLD,
                             align=ft.Alignment.CENTER
                         ),
                         ft.Text(
                             value="Try adding a music or look up in the search bar! (even if we haven't implement it yet 😭)",
+                            color=ft.Colors.ft.Colors.SECONDARY,
                             size=16,
                             align=ft.Alignment.CENTER
                         )
@@ -100,8 +103,9 @@ class GuiSongsList:
                         autofocus=False,
                         leading=ft.Text(value=f"{index+1}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.RIGHT),
                         title=song_title,
+                        title_text_style=ft.TextStyle(color=ft.Colors.ON_PRIMARY,size=16,font_family="IBM Plex"),
                         subtitle=song_artist,
-                        subtitle_text_style=ft.TextStyle(color=ft.Colors.SECONDARY),
+                        subtitle_text_style=ft.TextStyle(color=ft.Colors.SECONDARY,size=14,font_family="IBM Plex"),
                         trailing=ft.Text(value=f"{minute}:{second}",weight=ft.FontWeight.BOLD,size=16,text_align=ft.TextAlign.LEFT),
                         data={"path": song.absolute()},
                         on_click=lambda e: page.run_task(SongPlayer.play_song, page, song_player_column, e),
@@ -150,7 +154,7 @@ class GuiSongsList:
                     ]
                 ),
                 expand=True,
-                minimum_padding = 15
+                minimum_padding = 10
             )
         )
 

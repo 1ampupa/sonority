@@ -28,10 +28,38 @@ class SonorityApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: "Sonority",
+
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+
+        fontFamily: 'IBM Plex Sans Thai',
+
+        colorScheme: const ColorScheme.dark(
+          surface: Color(0xFF151515),
+          primary: Color(0xFF7555FF),
+          primaryContainer: Color(0xFF7555FF),
+          secondary: Color(0xFFDFE7F8),
+          onPrimary: Color(0xFFDFE7F8),
+          onSecondary: Color(0xFF151515)
+        )
+      ),
+
       home: Scaffold(
-        backgroundColor: Color(0xFF151515)
+        appBar: AppBar(
+          title: Text(
+            "Sonority",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight(700)
+            ),
+          ),
+          backgroundColor: Color(0xFF7555FF),
+          toolbarHeight: 40,
+        ),
       )
     );
   }

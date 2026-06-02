@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'gui/screens/home_screen.dart';
+
 void main() async {
   // Waiting for framework
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +12,7 @@ void main() async {
     size: Size(1000, 750),
     minimumSize: Size(1000, 750),
     center: true,
-    title: 'Sonority'
+    title: 'Sonority',
   );
 
   windowManager.waitUntilReadyToShow(windowsOptions, () async {
@@ -44,23 +46,10 @@ class SonorityApp extends StatelessWidget {
           primaryContainer: Color(0xFF7555FF),
           secondary: Color(0xFFDFE7F8),
           onPrimary: Color(0xFFDFE7F8),
-          onSecondary: Color(0xFF151515)
-        )
-      ),
-
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Sonority",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight(700)
-            ),
-          ),
-          backgroundColor: Color(0xFF7555FF),
-          toolbarHeight: 40,
+          onSecondary: Color(0xFF151515),
         ),
-      )
+      ),
+      home: const HomeScreen(),
     );
   }
 }

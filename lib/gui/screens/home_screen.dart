@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:sonority/utils/logger.dart';
 
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "Your playlist is waiting...",
     "Reset your vibe.",
     "Lost in the sound.",
+    "Vibe on"
   ];
 
   @override
@@ -35,10 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _greetingQuote = _getGreetingsQuote();
   }
 
-  String _getGreetingsQuote() {
-    Random randomiser = Random();
-    return greetingsQuotes[randomiser.nextInt(greetingsQuotes.length)];
-  }
+  String _getGreetingsQuote() => greetingsQuotes[Random().nextInt(greetingsQuotes.length)];
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: "My songs",
                     color: Theme.of(context).colorScheme.primary,
                     boolText: true,
-                    onPressed: () => logger.d("Pressed My songs.")
+                    onPressed: () => context.go('/mysongs'),
                   ),
                   MenuButton(
                     icon: Icons.settings,

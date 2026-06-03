@@ -3,7 +3,7 @@ import 'package:sonority/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'gui/screens/home_screen.dart';
+import 'package:sonority/core/routing/router.dart';
 
 void main() async {
   // Waiting for framework
@@ -34,7 +34,7 @@ class SonorityApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: "Sonority",
 
@@ -53,7 +53,7 @@ class SonorityApp extends StatelessWidget {
           onSecondary: Color(0xFF151515),
         ),
       ),
-      home: const HomeScreen(),
+      routerConfig: router,
     );
   }
 }

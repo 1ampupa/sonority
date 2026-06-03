@@ -1,20 +1,105 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'package:sonority/utils/logger.dart';
+
+import 'package:sonority/gui/widgets/menu_button.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late String _greetingQuote;
+
+  static const List<String> greetingsQuotes = [
+    "Hi there.",
+    "Hello there.",
+    "Hey there!",
+    "Howdy!",
+    "What's up!",
+    "Ready to dive in?",
+    "Your personal sonic escape.",
+    "Your playlist is waiting...",
+    "Reset your vibe.",
+    "Lost in the sound.",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _greetingQuote = _getGreetingsQuote();
+  }
+
+  String _getGreetingsQuote() {
+    Random randomiser = Random();
+    return greetingsQuotes[randomiser.nextInt(greetingsQuotes.length)];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Sonority",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsetsGeometry.directional(start: 40, end: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 5,
+                children: [
+                  Text(_greetingQuote, style: TextStyle(fontSize: 20)),
+                  Text(
+                    "SONORITY",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: "Anton",
+                      fontSize: 90,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(
+                height: 32,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              Column(
+                spacing: 5,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MenuButton(
+                    icon: Icons.music_note,
+                    label: "My songs",
+                    color: Theme.of(context).colorScheme.primary,
+                    boolText: true,
+                    onPressed: () => logger.d("Pressed My songs.")
+                  ),
+                  MenuButton(
+                    icon: Icons.settings,
+                    label: "Settings",
+                    color: Theme.of(context).colorScheme.secondary,
+                    onPressed: () => logger.d("Pressed Settings.")
+                  ),
+                  MenuButton(
+                    icon: Icons.info,
+                    label: "Credits",
+                    color: Theme.of(context).colorScheme.secondary,
+                    onPressed: () => logger.d("Pressed Credits.")
+                  ),
+                ],
+              ),
+              Divider(height: 32, color: Colors.transparent),
+              Center(child: Text("2026 Sonority, created by 1ampupa.")),
+            ],
+          ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        toolbarHeight: 40,
       ),
-      body: Center(child: Text("Sonority")),
     );
   }
 }

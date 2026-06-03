@@ -1,3 +1,5 @@
+import 'package:sonority/utils/logger.dart';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -9,8 +11,8 @@ void main() async {
   await windowManager.ensureInitialized();
 
   WindowOptions windowsOptions = const WindowOptions(
-    size: Size(1000, 750),
-    minimumSize: Size(1000, 750),
+    size: Size(800, 600),
+    minimumSize: Size(800, 600),
     center: true,
     title: 'Sonority',
   );
@@ -19,6 +21,8 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+
+  logger.i("App is ready!");
 
   runApp(const SonorityApp());
 }

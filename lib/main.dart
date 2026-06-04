@@ -1,9 +1,14 @@
-import 'package:sonority/utils/logger.dart';
-
+import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:sonority/utils/logger.dart';
+
+import 'package:sonority/core/songs/song_player.dart';
+import 'package:sonority/core/songs/songs_manager.dart';
 import 'package:sonority/core/routing/router.dart';
+
+final GetIt locator = GetIt.instance;
 
 void main() async {
   // Waiting for framework
@@ -21,6 +26,16 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+
+  // Modules register
+
+  locator.registerSingleton<SongsManager>(SongsManager());
+  await locator<SongsManager>().initialiseSongsManager();
+
+  locator.registerSingleton<SongPlayer>(
+    SongPlayer(songsManager: locator<SongsManager>()),
+  );
+  locator<SongPlayer>().setup();
 
   logger.i("App is ready!");
 

@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:sonority/utils/logger.dart';
-
 import 'package:sonority/gui/widgets/menu_button.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -83,13 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.settings,
                     label: "Settings",
                     color: Theme.of(context).colorScheme.secondary,
-                    onPressed: () => logger.d("Pressed Settings.")
+                    onPressed: () => context.go('/settings')
                   ),
                   MenuButton(
                     icon: Icons.info,
                     label: "Credits",
                     color: Theme.of(context).colorScheme.secondary,
-                    onPressed: () => logger.d("Pressed Credits.")
+                    onPressed: () => context.go('/credits')
                   ),
                 ],
               ),

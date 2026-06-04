@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_linux
+  flutter_media_metadata
   screen_retriever_linux
   window_manager
 )

@@ -37,6 +37,7 @@ class SongPlayer extends ChangeNotifier {
   Future<void> play(int index) async {
     if (songsManager.songsList.isEmpty) return;
     _currentIndex = index;
+    _currentPosition = 0;
 
     Song targetSong = songsManager.songsList[_currentIndex];
 

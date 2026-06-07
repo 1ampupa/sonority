@@ -1,12 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 
 import 'package:sonority/utils/logger.dart';
 
 import 'package:sonority/core/songs/songs_manager.dart';
 import 'package:sonority/core/songs/song.dart';
-import 'package:sonority/core/enums/repeat_mode_enums.dart';
+import 'package:sonority/core/enums/song_repeat_mode_enums.dart';
 
-class SongPlayer {
+class SongPlayer extends ChangeNotifier {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   final SongsManager songsManager;
@@ -14,10 +15,11 @@ class SongPlayer {
   int _currentIndex = 0;
   bool _isPlaying = false;
   bool isShuffle = false;
-  RepeatMode currentRepeatMode = RepeatMode.none;
+  SongRepeatMode currentSongRepeatMode = SongRepeatMode.none;
 
-  void setup() {
-    _audioPlayer.setVolume(0.15);
+  Future<void> setup() async {
+    await _audioPlayer.setVolume(0.15);
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
   }
 
   SongPlayer({required this.songsManager});
@@ -33,6 +35,7 @@ class SongPlayer {
     try {
       await _audioPlayer.play(DeviceFileSource(targetSong.path));
       _isPlaying = true;
+      notifyListeners();
     } catch (e) {
       logger.e("Failed to play a song: $e");
     }
@@ -57,23 +60,27 @@ class SongPlayer {
   void pause() {
     _audioPlayer.pause();
     _isPlaying = false;
+    notifyListeners();
   }
   
   void stop() {
     _audioPlayer.stop();
     _isPlaying = false;
+    notifyListeners();
   }
 
   void toggleShuffle() {
     isShuffle = !isShuffle;
+    notifyListeners();
   }
 
   void toggleRepeatMode() {
-    currentRepeatMode = switch (currentRepeatMode) {
-      RepeatMode.none => RepeatMode.all,
-      RepeatMode.all => RepeatMode.one,
-      RepeatMode.one => RepeatMode.none
+    currentSongRepeatMode = switch (currentSongRepeatMode) {
+      SongRepeatMode.none => SongRepeatMode.all,
+      SongRepeatMode.all => SongRepeatMode.one,
+      SongRepeatMode.one => SongRepeatMode.none
     };
+    notifyListeners();
   }
 
   bool get isPlaying => _isPlaying;

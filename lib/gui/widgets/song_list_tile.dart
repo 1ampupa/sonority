@@ -50,14 +50,14 @@ class _SongListTileState extends State<SongListTile> {
       ),
       title: Text(widget.song.title),
       titleTextStyle: TextStyle(
-        fontSize: 16,
+        fontSize: 18,
         fontFamily: "IBM Plex Sans Thai",
         overflow: TextOverflow.ellipsis,
         color: Theme.of(context).colorScheme.secondary,
       ),
       subtitle: Text(widget.song.artist),
       subtitleTextStyle: TextStyle(
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: "IBM Plex Sans Thai",
         overflow: TextOverflow.ellipsis,
         color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.75),

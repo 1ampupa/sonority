@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_media_metadata/flutter_media_metadata.dart';
+import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 
 import 'package:sonority/utils/logger.dart';
 import 'package:sonority/core/songs/song.dart';
@@ -49,16 +49,10 @@ class SongsManager {
         if (file is File &&
             (file.path.endsWith('.mp3') || file.path.endsWith('.wav'))) {
           // Get song metadata
-          final metadata = await MetadataRetriever.fromFile(File(file.path));
-          String? trackName = metadata.trackName;
-
-          String songTitle = (trackName == null || trackName.trim().isEmpty)
-                              ? p.basenameWithoutExtension(file.path)
-                              : trackName;
-          String songArtist = (metadata.trackArtistNames == null || metadata.trackArtistNames!.isEmpty || metadata.trackArtistNames!.join().trim().isEmpty)
-                              ? "Local files"
-                              : metadata.trackArtistNames!.join(', ');
-          int? songDuration = metadata.trackDuration;
+          final metadata = readMetadata(file, getImage: false);
+          String songTitle = metadata.title ?? p.basenameWithoutExtension(file.path);
+          String songArtist = metadata.artist ?? "Local file";
+          int songDuration = metadata.duration?.inMilliseconds ?? 0;
 
           songsList.add(Song(
             path: file.path,

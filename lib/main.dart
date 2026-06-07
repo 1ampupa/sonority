@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
+import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:sonority/utils/logger.dart';
@@ -13,29 +15,35 @@ final GetIt locator = GetIt.instance;
 void main() async {
   // Waiting for framework
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
 
-  WindowOptions windowsOptions = const WindowOptions(
-    size: Size(800, 600),
-    minimumSize: Size(800, 600),
-    center: true,
-    title: 'Sonority',
-  );
+  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    await windowManager.ensureInitialized();
 
-  windowManager.waitUntilReadyToShow(windowsOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+    WindowOptions windowsOptions = const WindowOptions(
+      size: Size(800, 600),
+      minimumSize: Size(800, 600),
+      center: true,
+      title: 'Sonority',
+    );
+
+    windowManager.waitUntilReadyToShow(windowsOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   // Modules register
 
-  locator.registerSingleton<SongsManager>(SongsManager());
+  // SongsManager
+  locator.registerSingleton<SongsManager>(SongsManager());  
   await locator<SongsManager>().initialiseSongsManager();
 
-  locator.registerSingleton<SongPlayer>(
-    SongPlayer(songsManager: locator<SongsManager>()),
-  );
-  locator<SongPlayer>().setup();
+  // SongPlayer
+  locator.registerSingleton<SongPlayer>(SongPlayer(songsManager: locator<SongsManager>()));
+  await locator<SongPlayer>().setup();
+
+  // MiniSongPlayerStack
+  locator.registerSingleton<MiniSongPlayerStack>(MiniSongPlayerStack());
 
   logger.i("App is ready!");
 
@@ -63,9 +71,14 @@ class SonorityApp extends StatelessWidget {
           surface: Color(0xFF151515),
           primary: Color(0xFF7555FF),
           primaryContainer: Color(0xFF7555FF),
-          secondary: Color(0xFFDFE7F8),
-          onPrimary: Color(0xFFDFE7F8),
+          onPrimary: Color(0xFFDBE7FF),
+          secondary: Color(0xFFDBE7FF),
+          secondaryContainer: Color(0xFFDBE7FF),
           onSecondary: Color(0xFF151515),
+          tertiary: Color(0xFF202020),
+          tertiaryContainer: Color(0xFF202020),
+          onTertiary: Color(0xFFDBE7FF),
+          onTertiaryContainer: Color(0xFFDBE7FF),
         ),
       ),
       routerConfig: router,

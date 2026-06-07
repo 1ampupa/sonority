@@ -1,24 +1,24 @@
 import 'package:sonority/utils/logger.dart';
 
 class Song {
-  final String title;
-  final String artist;
-  final int? duration;
-  final String path;
+  final String _title;
+  final String _artist;
+  final int? _durationInMs;
+  final String _path;
 
   const Song({
-    required this.title,
-    required this.artist,
-    required this.duration,
+    required this._title,
+    required this._artist,
+    required this._durationInMs,
 
-    required this.path
+    required this._path
   });
 
   String get readableDuration {
-    if (duration != null) {
+    if (_durationInMs != null) {
       String stringMinute, stringSecond;
-      var minute = ((duration! / 1000) / 60).floor();
-      var second = ((duration! / 1000) % 60).floor();
+      var minute = ((_durationInMs / 1000) / 60).floor();
+      var second = ((_durationInMs / 1000) % 60).floor();
 
       stringMinute = minute.toString();
 
@@ -34,5 +34,13 @@ class Song {
       logger.w("Can't get readable duration.");
       return "--:--";
     }
-  } 
+  }
+
+  String get title => _title;
+
+  String get artist => _artist;
+
+  String get path => _path;
+
+  int? get durationInMs => _durationInMs;
 }

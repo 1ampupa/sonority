@@ -58,7 +58,7 @@ class SongsManager {
             path: file.path,
             title: songTitle,
             artist: songArtist,
-            duration: songDuration
+            durationInMs: songDuration
           ));
         }
       }

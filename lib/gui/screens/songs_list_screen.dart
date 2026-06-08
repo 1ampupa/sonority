@@ -67,7 +67,7 @@ class _SongsListScreenState extends State<SongsListScreen> {
                 itemBuilder: (context, index) {
                   final song = _songsManager.songsList[index];
                   final isCurrentSong =
-                      index == _songPlayer.currentIndex && _songPlayer.isPlaying;
+                      index == _songPlayer.currentIndex && _songPlayer.isLoaded;
               
                   return Padding(
                     padding: EdgeInsetsGeometry.symmetric(

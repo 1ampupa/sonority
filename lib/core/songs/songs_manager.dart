@@ -52,7 +52,7 @@ class SongsManager {
           final metadata = readMetadata(file, getImage: false);
           String songTitle = metadata.title ?? p.basenameWithoutExtension(file.path);
           String songArtist = metadata.artist ?? "Local file";
-          int songDuration = metadata.duration?.inMilliseconds ?? 0;
+          double songDuration = metadata.duration?.inMilliseconds.toDouble() ?? 0;
 
           songsList.add(Song(
             path: file.path,

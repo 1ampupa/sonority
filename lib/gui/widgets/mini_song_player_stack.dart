@@ -172,12 +172,27 @@ class _MiniSongPlayerStackState extends State<MiniSongPlayerStack> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(),
                   child: Slider(
-                    value: _songPlayer.currentPostion.toDouble(),
+                    value: _songPlayer.currentPosition.clamp(0, _songPlayer.currentSong.duration),
                     min: 0.0,
-                    max: _songPlayer.currentSong.durationInMs! / 1000,
-                    onChanged: (newValue) => setState(() {
-                      logger.i((_songPlayer.currentPostion.toDouble(), _songPlayer.currentSong.durationInMs!.toDouble()));
-                    }),
+                    max: _songPlayer.currentSong.duration,
+                    onChangeStart: (_) {
+                      setState(() {
+                        _songPlayer.isDraggingSlider = true;
+                      });
+                      _songPlayer.pause();
+                    },
+                    onChanged: (newValue) {
+                      setState(() {
+                        _songPlayer.isDraggingSlider = false;
+                        _songPlayer.seekTo(newValue);
+                      });
+                    },
+                    onChangeEnd: (_) {
+                      setState(() {
+                        _songPlayer.isDraggingSlider = false;
+                      });
+                      _songPlayer.resume();
+                    },
                   ),
                 ),
               ),

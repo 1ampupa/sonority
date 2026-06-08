@@ -3,7 +3,7 @@ import 'package:sonority/utils/logger.dart';
 class Song {
   final String _title;
   final String _artist;
-  final int? _durationInMs;
+  final double? _durationInMs;
   final String _path;
 
   const Song({
@@ -42,5 +42,7 @@ class Song {
 
   String get path => _path;
 
-  int? get durationInMs => _durationInMs;
+  double get durationInMs => _durationInMs ?? 0.0;
+
+  double get duration => (_durationInMs ?? 0.0) / 1000;
 }

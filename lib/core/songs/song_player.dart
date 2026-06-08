@@ -12,11 +12,13 @@ class SongPlayer extends ChangeNotifier {
 
   final SongsManager songsManager;
 
-  int _currentIndex = 0;
   bool _isLoaded = false;
+  int _currentIndex = 0;
+
   bool _isPlaying = false;
-  int _currentPosition = 0;
+  double _currentPosition = 0;
   String _readableCurrentPosition = "0:00";
+  bool isDraggingSlider = false;
 
   bool _isShuffle = false;
   SongRepeatMode _currentSongRepeatMode = SongRepeatMode.none;
@@ -53,15 +55,20 @@ class SongPlayer extends ChangeNotifier {
     }
   }
 
-  void togglePauseResume() {
-    if (_isPlaying) {
-      _audioPlayer.pause();
-      _isPlaying = false;
-    } else {
-      _audioPlayer.resume();
-      _isPlaying = true;
-    }
+  void pause() {
+    _audioPlayer.pause();
+    _isPlaying = false;
     notifyListeners();
+  }
+
+  void resume() {
+    _audioPlayer.resume();
+    _isPlaying = true;
+    notifyListeners();
+  }
+
+  void togglePauseResume() {
+    _isPlaying ? pause() : resume();
   }
 
   void seek(bool direction, int duration) async {
@@ -72,6 +79,15 @@ class SongPlayer extends ChangeNotifier {
       Duration targetPosition = currentPosition + Duration(seconds: targetDirection * duration);
       await _audioPlayer.seek(targetPosition);
     }
+
+    notifyListeners();
+  }
+
+  void seekTo(double newDuration) async {
+    if (isDraggingSlider) return;
+
+    Duration targetPosition = Duration(seconds: newDuration.toInt());
+    await _audioPlayer.seek(targetPosition);
 
     notifyListeners();
   }
@@ -132,10 +148,14 @@ class SongPlayer extends ChangeNotifier {
   }
 
   void updatePosition(Duration currentPosition) async {
+    if (isDraggingSlider) {
+      return;
+    }
+
     String stringMinute, stringSecond;
     int wholePosition = currentPosition.inSeconds;
 
-    _currentPosition = wholePosition;
+    _currentPosition = wholePosition.toDouble();
 
     int minutes = wholePosition ~/ 60;
     int seconds = wholePosition % 60;
@@ -165,7 +185,7 @@ class SongPlayer extends ChangeNotifier {
 
   Song get currentSong => songsManager.songsList[_currentIndex];
 
-  int get currentPostion => _currentPosition;
+  double get currentPosition => _currentPosition;
 
   String get readableCurrentPosition => _readableCurrentPosition;
 }

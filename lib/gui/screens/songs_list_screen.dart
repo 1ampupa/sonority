@@ -57,31 +57,36 @@ class _SongsListScreenState extends State<SongsListScreen> {
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(5.0),
-            physics: const BouncingScrollPhysics(),
-            itemCount: _songsManager.songsList.length,
-            itemBuilder: (context, index) {
-              final song = _songsManager.songsList[index];
-              final isCurrentSong =
-                  index == _songPlayer.currentIndex && _songPlayer.isPlaying;
-
-              return Padding(
-                padding: EdgeInsetsGeometry.symmetric(
-                  horizontal: 20,
-                  vertical: 5,
-                ),
-                child: SongListTile(
-                  song: song,
-                  isCurrentSong: isCurrentSong,
-                  index: index,
-                  onTap: () {
-                    _songPlayer.play(index);
-                    setState(() {});
-                  },
-                ),
+          child: ListenableBuilder(
+            listenable: _songPlayer,
+            builder: (context, child) {
+              return ListView.builder(
+                padding: EdgeInsets.all(5.0),
+                physics: const BouncingScrollPhysics(),
+                itemCount: _songsManager.songsList.length,
+                itemBuilder: (context, index) {
+                  final song = _songsManager.songsList[index];
+                  final isCurrentSong =
+                      index == _songPlayer.currentIndex && _songPlayer.isPlaying;
+              
+                  return Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
+                    child: SongListTile(
+                      song: song,
+                      isCurrentSong: isCurrentSong,
+                      index: index,
+                      onTap: () {
+                        _songPlayer.play(index);
+                        setState(() {});
+                      },
+                    ),
+                  );
+                },
               );
-            },
+            }
           ),
         ),
         _miniSongPlayerStack,

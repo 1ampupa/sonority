@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
+import 'package:sonority/gui/widgets/playback_controller_column.dart';
+import 'package:sonority/utils/duration_formatter.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:sonority/utils/logger.dart';
@@ -34,6 +36,9 @@ void main() async {
 
   // Modules register
 
+  // DurationFormatter
+  locator.registerSingleton<DurationFormatter>(DurationFormatter());
+
   // SongsManager
   locator.registerSingleton<SongsManager>(SongsManager());  
   await locator<SongsManager>().initialiseSongsManager();
@@ -41,6 +46,9 @@ void main() async {
   // SongPlayer
   locator.registerSingleton<SongPlayer>(SongPlayer(songsManager: locator<SongsManager>()));
   await locator<SongPlayer>().setup();
+
+  // PlaybackControllerColumn
+  locator.registerSingleton<PlaybackControllerColumn>(PlaybackControllerColumn());
 
   // MiniSongPlayerStack
   locator.registerSingleton<MiniSongPlayerStack>(MiniSongPlayerStack());

@@ -1,4 +1,7 @@
-import 'package:sonority/utils/logger.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sonority/utils/duration_formatter.dart';
+
+final DurationFormatter _durationFormatter = GetIt.instance<DurationFormatter>();
 
 class Song {
   final String _title;
@@ -15,25 +18,7 @@ class Song {
   });
 
   String get readableDuration {
-    if (_durationInMs != null) {
-      String stringMinute, stringSecond;
-      var minute = ((_durationInMs / 1000) / 60).floor();
-      var second = ((_durationInMs / 1000) % 60).floor();
-
-      stringMinute = minute.toString();
-
-      if (second < 10) {
-        stringSecond = "0$second";
-      } else {
-        stringSecond = second.toString();
-      }
-
-      return '$stringMinute:$stringSecond';
-
-    } else {
-      logger.w("Can't get readable duration.");
-      return "--:--";
-    }
+    return _durationFormatter.formatDuration(Duration(seconds: duration.toInt()));
   }
 
   String get title => _title;

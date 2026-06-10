@@ -1,5 +1,7 @@
+import 'package:get_it/get_it.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:sonority/utils/duration_formatter.dart';
 
 import 'package:sonority/utils/logger.dart';
 
@@ -12,6 +14,8 @@ class SongPlayer extends ChangeNotifier {
 
   final SongsManager songsManager;
 
+  final DurationFormatter _durationFormatter = GetIt.instance<DurationFormatter>();
+
   bool _isLoaded = false;
   int _currentIndex = 0;
 
@@ -19,6 +23,7 @@ class SongPlayer extends ChangeNotifier {
   double _currentPosition = 0;
   String _readableCurrentPosition = "0:00";
   bool isDraggingSlider = false;
+  bool isPlayingBeforeDraggingSlider = false;
 
   bool _isShuffle = false;
   SongRepeatMode _currentSongRepeatMode = SongRepeatMode.none;
@@ -152,23 +157,8 @@ class SongPlayer extends ChangeNotifier {
       return;
     }
 
-    String stringMinute, stringSecond;
-    int wholePosition = currentPosition.inSeconds;
-
-    _currentPosition = wholePosition.toDouble();
-
-    int minutes = wholePosition ~/ 60;
-    int seconds = wholePosition % 60;
-
-    stringMinute = minutes.toString();
-
-    if (seconds < 10) {
-      stringSecond = "0$seconds";
-    } else {
-      stringSecond = seconds.toString();
-    }
-
-    _readableCurrentPosition = "$stringMinute:$stringSecond";
+    _currentPosition = currentPosition.inSeconds.toDouble();
+    _readableCurrentPosition = _durationFormatter.formatDuration(currentPosition);
 
     notifyListeners();
   }

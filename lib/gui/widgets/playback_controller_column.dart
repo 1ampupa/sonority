@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
+import 'package:sonority/core/enums/song_repeat_mode_enums.dart';
 
 import 'package:sonority/core/songs/song_player.dart';
 
@@ -19,18 +20,32 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
   bool showSeekButtons = false;
   bool showShuffleAndRepeatButtons = true;
 
+  bool showVolumeSlider = true;
+
   @override
   void initState() {
     super.initState();
   }
 
+  // Shuffle Icon
+  Icon shuffleIcon() {
+    return Icon(
+      Icons.shuffle,
+      color: _songPlayer.isShuffle
+           ? Theme.of(context).colorScheme.primary
+           : Theme.of(context).colorScheme.secondary
+    );
+  }
+
   // Shuffle Button
   IconButton shuffleButton() {
     return IconButton(
-      icon: Icon(Icons.shuffle),
+      icon: shuffleIcon(),
       iconSize: 20,
-      color: Theme.of(context).colorScheme.secondary,
       padding: EdgeInsets.all(0),
+      tooltip: _songPlayer.isShuffle
+             ? "Disable Shuffle"
+             : "Enable Shuffle",
       onPressed: () {
         _songPlayer.toggleShuffle();
         setState(() {});
@@ -45,6 +60,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       iconSize: 30,
       color: Theme.of(context).colorScheme.secondary,
       padding: EdgeInsets.all(0),
+      tooltip: "Previous",
       onPressed: () {
         _songPlayer.previous();
         setState(() {});
@@ -59,6 +75,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       iconSize: 30,
       color: Theme.of(context).colorScheme.secondary,
       padding: EdgeInsets.all(0),
+      tooltip: "Rewind",
       onPressed: () {
         _songPlayer.seek(false, 5);
         setState(() {});
@@ -111,6 +128,9 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
     return IconButton(
       icon: _songPlayer.isPlaying ? pauseIcon() : resumeIcon(),
       padding: EdgeInsets.all(0),
+      tooltip: _songPlayer.isPlaying
+             ? "Pause"
+             : "Resume",
       onPressed: () {
         _songPlayer.togglePauseResume();
         setState(() {});
@@ -124,6 +144,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       icon: Icon(Icons.fast_forward),
       iconSize: 30,
       padding: EdgeInsets.all(0),
+      tooltip: "Skip",
       color: Theme.of(context).colorScheme.secondary,
       onPressed: () {
         _songPlayer.seek(true, 5);
@@ -143,6 +164,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       iconSize: 30,
       color: Theme.of(context).colorScheme.secondary,
       padding: EdgeInsets.all(0),
+      tooltip: "Next",
       onPressed: () {
         _songPlayer.next();
         setState(() {});
@@ -150,13 +172,40 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
     );
   }
 
+  // Repeat Mode Icon
+  Icon repeatModesIcon() {
+    return switch (_songPlayer.repeatMode) {
+      SongRepeatMode.none => Icon(
+        Icons.repeat,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+      SongRepeatMode.all => Icon(
+        Icons.repeat,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      SongRepeatMode.one => Icon(
+        Icons.repeat_one,
+        color: Theme.of(context).colorScheme.primary,
+      )
+    };
+  }
+
+  String getRepeatModesTooltip() {
+    return switch (_songPlayer.repeatMode) {
+      SongRepeatMode.none => "Enable Repeat",
+      SongRepeatMode.all => "Enable Repeat One",
+      SongRepeatMode.one => "Disable Repeat"
+    };
+  }
+
   // Repeat Mode Button
-  IconButton repeatModeButton() {
+  IconButton repeatModesButton() {
     return IconButton(
-      icon: Icon(Icons.repeat),
-      iconSize: 20,
+      icon: repeatModesIcon(),
+      iconSize: 25,
       color: Theme.of(context).colorScheme.secondary,
       padding: EdgeInsets.all(0),
+      tooltip: getRepeatModesTooltip(),
       onPressed: () {
         _songPlayer.toggleRepeatMode();
         setState(() {});
@@ -167,7 +216,12 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
   // Playback Slider
   SliderTheme playbackSlider() {
     return SliderTheme(
-      data: SliderThemeData(),
+      data: SliderThemeData(
+        thumbShape: const RoundSliderThumbShape(
+          enabledThumbRadius: 8,
+          pressedElevation: 12
+        )
+      ),
       child: Slider(
         value: _songPlayer.currentPosition.clamp(
           0,
@@ -201,6 +255,9 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       ),
     );
   }
+
+  // Volume Slider
+  
 
   Column songInfoColumn(BuildContext context) {
     return Column(
@@ -248,7 +305,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
             nextTrackButton(),
             Visibility(
               visible: showShuffleAndRepeatButtons,
-              child: repeatModeButton(),
+              child: repeatModesButton(),
             ),
           ],
         ),

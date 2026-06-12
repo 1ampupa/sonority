@@ -89,6 +89,11 @@ class SonorityApp extends StatelessWidget {
           onTertiary: Color(0xFFDBE7FF),
           onTertiaryContainer: Color(0xFFDBE7FF),
         ),
+
+        tooltipTheme: const TooltipThemeData(
+          preferBelow: false,
+          waitDuration: Duration(milliseconds: 500),
+        )
       ),
       routerConfig: router,
     );

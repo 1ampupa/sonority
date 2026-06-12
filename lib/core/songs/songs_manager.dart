@@ -45,10 +45,10 @@ class SongsManager {
       final List<FileSystemEntity> files = _appSongsDir!.listSync();
 
       for (var file in files) {
-        // Check if object is a file and ends with audio extension
+        // Check if object is a file and ends with an audio extension
         if (file is File &&
             (file.path.endsWith('.mp3') || file.path.endsWith('.wav'))) {
-          // Get song metadata
+          // Fetch the song metadata
           final metadata = readMetadata(file, getImage: false);
           String songTitle = metadata.title ?? p.basenameWithoutExtension(file.path);
           String songArtist = metadata.artist ?? "Local file";

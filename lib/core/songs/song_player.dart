@@ -16,6 +16,7 @@ class SongPlayer extends ChangeNotifier {
 
   final DurationFormatter _durationFormatter = GetIt.instance<DurationFormatter>();
 
+  // State Variables
   bool _isLoaded = false;
   int _currentIndex = 0;
 
@@ -43,17 +44,24 @@ class SongPlayer extends ChangeNotifier {
 
   Future<void> play(int index) async {
     if (songsManager.songsList.isEmpty) return;
+
+    // If it's already playing the song then just replay it.
+    if (_currentIndex == index) {
+      seekTo(0);
+      return;
+    }
+
     _currentIndex = index;
     _currentPosition = 0;
 
-    Song targetSong = songsManager.songsList[_currentIndex];
-
     try {
+      Song targetSong = songsManager.songsList[_currentIndex];
+      
       await _audioPlayer.setSource(DeviceFileSource(targetSong.path));
       _isLoaded = true;
-      _audioPlayer.seek(Duration(seconds: 0));
       _audioPlayer.resume();
       _isPlaying = true;
+
       notifyListeners();
     } catch (e) {
       logger.e("Failed to play a song: $e");
@@ -81,17 +89,17 @@ class SongPlayer extends ChangeNotifier {
     int targetDirection = direction ? 1 : -1;
 
     if (currentPosition != null) {
-      Duration targetPosition = currentPosition + Duration(seconds: targetDirection * duration);
-      await _audioPlayer.seek(targetPosition);
+      int targetPosition = currentPosition.inSeconds + (targetDirection * duration);
+      seekTo(targetPosition.toDouble());
     }
 
     notifyListeners();
   }
 
-  void seekTo(double newDuration) async {
+  void seekTo(double newDurationAsSecond) async {
     if (isDraggingSlider) return;
 
-    Duration targetPosition = Duration(seconds: newDuration.toInt());
+    Duration targetPosition = Duration(seconds: newDurationAsSecond.toInt());
     await _audioPlayer.seek(targetPosition);
 
     notifyListeners();
@@ -153,15 +161,15 @@ class SongPlayer extends ChangeNotifier {
   }
 
   void updatePosition(Duration currentPosition) async {
-    if (isDraggingSlider) {
-      return;
-    }
+    if (isDraggingSlider) return;
 
     _currentPosition = currentPosition.inSeconds.toDouble();
     _readableCurrentPosition = _durationFormatter.formatDuration(currentPosition);
 
     notifyListeners();
   }
+
+  // Getter methods
 
   bool get isLoaded => _isLoaded;
 

@@ -1,5 +1,6 @@
 class DurationFormatter {
 
+  // Format Duration as a readable string
   String formatDuration(Duration currentPosition) {
     String stringMinute, stringSecond;
     int wholePosition = currentPosition.inSeconds;

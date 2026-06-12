@@ -17,6 +17,8 @@ class Song {
     required this._path
   });
 
+  // Getter Methods
+
   String get readableDuration {
     return _durationFormatter.formatDuration(Duration(seconds: duration.toInt()));
   }

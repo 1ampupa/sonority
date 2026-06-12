@@ -5,7 +5,7 @@ class SonorityAppBar extends StatelessWidget implements PreferredSizeWidget{
 
   const SonorityAppBar({
     super.key,
-    this.title = "Sonority"
+    this.title = "Sonority" // Default App Bar
   });
 
   @override

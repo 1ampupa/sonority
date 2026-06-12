@@ -1,16 +1,17 @@
 import 'dart:io';
 import 'package:get_it/get_it.dart';
-import 'package:flutter/material.dart';
-import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
-import 'package:sonority/gui/widgets/playback_controller_column.dart';
-import 'package:sonority/utils/duration_formatter.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter/material.dart';
 
+import 'package:sonority/utils/duration_formatter.dart';
 import 'package:sonority/utils/logger.dart';
 
 import 'package:sonority/core/songs/song_player.dart';
 import 'package:sonority/core/songs/songs_manager.dart';
 import 'package:sonority/core/routing/router.dart';
+
+import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
+import 'package:sonority/gui/widgets/playback_controller_column.dart';
 
 final GetIt locator = GetIt.instance;
 

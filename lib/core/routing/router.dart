@@ -7,7 +7,7 @@ import 'package:sonority/gui/screens/songs_list_screen.dart';
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
-      path: '/',
+      path: '/', // MainScreen
       builder: (BuildContext context, GoRouterState state) {
         return const SongsListScreen();
       }

@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 
 import 'package:sonority/core/songs/song_player.dart';
-import 'package:sonority/gui/widgets/playback_controller_column.dart';
+import 'package:sonority/gui/widgets/playback/playback_panel_column.dart';
 
 class MiniSongPlayerStack extends StatefulWidget {
 
@@ -17,7 +17,7 @@ class MiniSongPlayerStack extends StatefulWidget {
 
 class _MiniSongPlayerStackState extends State<MiniSongPlayerStack> {
   final SongPlayer _songPlayer = GetIt.instance<SongPlayer>();
-  final PlaybackControllerColumn _playbackControllerColumn = GetIt.instance<PlaybackControllerColumn>();
+  final PlaybackPanelColumn _playbackPanelColumn = GetIt.instance<PlaybackPanelColumn>();
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _MiniSongPlayerStackState extends State<MiniSongPlayerStack> {
               color: Theme.of(context).colorScheme.tertiaryContainer,
               borderRadius: BorderRadius.circular(10.0)
             ),
-            child: _playbackControllerColumn,
+            child: _playbackPanelColumn,
           ),
         )
       ],

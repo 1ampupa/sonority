@@ -23,8 +23,6 @@ class SongPlayer extends ChangeNotifier {
   bool _isPlaying = false;
   double _currentPosition = 0;
   String _readableCurrentPosition = "0:00";
-  bool isDraggingSlider = false;
-  bool isPlayingBeforeDraggingSlider = false;
 
   bool _isShuffle = false;
   SongRepeatMode _currentSongRepeatMode = SongRepeatMode.none;
@@ -97,7 +95,6 @@ class SongPlayer extends ChangeNotifier {
   }
 
   void seekTo(double newDurationAsSecond) async {
-    if (isDraggingSlider) return;
 
     Duration targetPosition = Duration(seconds: newDurationAsSecond.toInt());
     await _audioPlayer.seek(targetPosition);
@@ -161,7 +158,6 @@ class SongPlayer extends ChangeNotifier {
   }
 
   void updatePosition(Duration currentPosition) async {
-    if (isDraggingSlider) return;
 
     _currentPosition = currentPosition.inSeconds.toDouble();
     _readableCurrentPosition = _durationFormatter.formatDuration(currentPosition);

@@ -10,8 +10,8 @@ import 'package:sonority/core/songs/song_player.dart';
 import 'package:sonority/core/songs/songs_manager.dart';
 import 'package:sonority/core/routing/router.dart';
 
-import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
-import 'package:sonority/gui/widgets/playback_controller_column.dart';
+import 'package:sonority/gui/widgets/playback/mini_song_player_stack.dart';
+import 'package:sonority/gui/widgets/playback/playback_panel_column.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -49,7 +49,7 @@ void main() async {
   await locator<SongPlayer>().setup();
 
   // PlaybackControllerColumn
-  locator.registerSingleton<PlaybackControllerColumn>(PlaybackControllerColumn());
+  locator.registerSingleton<PlaybackPanelColumn>(PlaybackPanelColumn());
 
   // MiniSongPlayerStack
   locator.registerSingleton<MiniSongPlayerStack>(MiniSongPlayerStack());

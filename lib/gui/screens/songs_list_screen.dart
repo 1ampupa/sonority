@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sonority/core/songs/song_player.dart';
 
 import 'package:sonority/core/songs/songs_manager.dart';
-import 'package:sonority/gui/widgets/mini_song_player_stack.dart';
+import 'package:sonority/gui/widgets/playback/mini_song_player_stack.dart';
 import 'package:sonority/gui/widgets/song_list_tile.dart';
 
 import 'package:sonority/gui/widgets/sonority_app_bar.dart';

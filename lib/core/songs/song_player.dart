@@ -45,8 +45,8 @@ class SongPlayer extends ChangeNotifier {
   Future<void> play(int index) async {
     if (songsManager.songsList.isEmpty) return;
 
-    // If it's already playing the song then just replay it.
-    if (_currentIndex == index) {
+    // If it's already playing the loaded song then just replay it.
+    if (_currentIndex == index && _isLoaded) {
       seekTo(0);
       return;
     }

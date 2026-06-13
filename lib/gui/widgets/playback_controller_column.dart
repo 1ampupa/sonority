@@ -32,8 +32,10 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
     return Icon(
       Icons.shuffle,
       color: _songPlayer.isShuffle
-           ? Theme.of(context).colorScheme.primary
-           : Theme.of(context).colorScheme.secondary
+          ? Theme.of(
+              context,
+            ).colorScheme.primary.withValues(red: .50, green: .45, blue: 1)
+          : Theme.of(context).colorScheme.secondary,
     );
   }
 
@@ -41,11 +43,9 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
   IconButton shuffleButton() {
     return IconButton(
       icon: shuffleIcon(),
-      iconSize: 20,
+      iconSize: 25,
       padding: EdgeInsets.all(0),
-      tooltip: _songPlayer.isShuffle
-             ? "Disable Shuffle"
-             : "Enable Shuffle",
+      tooltip: _songPlayer.isShuffle ? "Disable Shuffle" : "Enable Shuffle",
       onPressed: () {
         _songPlayer.toggleShuffle();
         setState(() {});
@@ -128,9 +128,7 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
     return IconButton(
       icon: _songPlayer.isPlaying ? pauseIcon() : resumeIcon(),
       padding: EdgeInsets.all(0),
-      tooltip: _songPlayer.isPlaying
-             ? "Pause"
-             : "Resume",
+      tooltip: _songPlayer.isPlaying ? "Pause" : "Resume",
       onPressed: () {
         _songPlayer.togglePauseResume();
         setState(() {});
@@ -181,20 +179,25 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       ),
       SongRepeatMode.all => Icon(
         Icons.repeat,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(red: .50, green: .45, blue: 1),
       ),
       SongRepeatMode.one => Icon(
         Icons.repeat_one,
-        color: Theme.of(context).colorScheme.primary,
-      )
+        color: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(red: .50, green: .45, blue: 1),
+      ),
     };
   }
 
+  // Repeat Modes Tooltip
   String getRepeatModesTooltip() {
     return switch (_songPlayer.repeatMode) {
       SongRepeatMode.none => "Enable Repeat",
       SongRepeatMode.all => "Enable Repeat One",
-      SongRepeatMode.one => "Disable Repeat"
+      SongRepeatMode.one => "Disable Repeat",
     };
   }
 
@@ -219,8 +222,8 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       data: SliderThemeData(
         thumbShape: const RoundSliderThumbShape(
           enabledThumbRadius: 8,
-          pressedElevation: 12
-        )
+          pressedElevation: 12,
+        ),
       ),
       child: Slider(
         value: _songPlayer.currentPosition.clamp(
@@ -257,7 +260,21 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
   }
 
   // Volume Slider
-  
+  SliderTheme volumeSlider() {
+    return SliderTheme(
+      data: SliderThemeData(),
+      child: Slider(
+        value: _songPlayer.currentVolume,
+        min: 0,
+        max: 0.75,
+        onChanged: (newVolume) => {
+          setState(() {
+            _songPlayer.setVolume(newVolume);
+          })
+        },
+      ),
+    );
+  }
 
   Column songInfoColumn(BuildContext context) {
     return Column(
@@ -338,11 +355,21 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
     );
   }
 
-  Column additionalControls(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
+  Row additionalControls(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Visibility(
+          visible: showVolumeSlider,
+          child: Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1),
+              child: volumeSlider(),
+            ),
+          ),
+        ),
         IconButton(
           icon: Icon(Icons.clear),
           onPressed: () {},
@@ -371,4 +398,5 @@ class _PlaybackControllerColumnState extends State<PlaybackControllerColumn> {
       },
     );
   }
+
 }

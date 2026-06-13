@@ -168,6 +168,11 @@ class SongPlayer extends ChangeNotifier {
 
     notifyListeners();
   }
+  
+  void setVolume(double volume) {
+    _audioPlayer.setVolume(volume);
+    notifyListeners();
+  }
 
   // Getter methods
 
@@ -186,4 +191,6 @@ class SongPlayer extends ChangeNotifier {
   double get currentPosition => _currentPosition;
 
   String get readableCurrentPosition => _readableCurrentPosition;
+
+  double get currentVolume => _audioPlayer.volume;
 }

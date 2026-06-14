@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sonority/core/enums/song_repeat_mode_enums.dart';
+import 'package:sonority/core/enums/song_loop_mode_enums.dart';
 import 'package:sonority/core/songs/song_player.dart';
 
 class RepeatModesButton extends StatefulWidget {
@@ -18,17 +18,17 @@ class _RepeatModesButtonState extends State<RepeatModesButton> {
   // Repeat Mode Icon
   Icon repeatModesIcon(BuildContext context) {
     return switch (widget._songPlayer.repeatMode) {
-      SongRepeatMode.none => Icon(
+      SongLoopMode.none => Icon(
         Icons.repeat,
         color: Theme.of(context).colorScheme.secondary,
       ),
-      SongRepeatMode.all => Icon(
+      SongLoopMode.all => Icon(
         Icons.repeat,
         color: Theme.of(
           context,
         ).colorScheme.primary.withValues(red: .50, green: .45, blue: 1),
       ),
-      SongRepeatMode.one => Icon(
+      SongLoopMode.one => Icon(
         Icons.repeat_one,
         color: Theme.of(
           context,
@@ -40,9 +40,9 @@ class _RepeatModesButtonState extends State<RepeatModesButton> {
   // Repeat Modes Tooltip
   String getRepeatModesTooltip() {
     return switch (widget._songPlayer.repeatMode) {
-      SongRepeatMode.none => "Enable Repeat",
-      SongRepeatMode.all => "Enable Repeat One",
-      SongRepeatMode.one => "Disable Repeat",
+      SongLoopMode.none => "Enable Repeat",
+      SongLoopMode.all => "Enable Repeat One",
+      SongLoopMode.one => "Disable Repeat",
     };
   }
 

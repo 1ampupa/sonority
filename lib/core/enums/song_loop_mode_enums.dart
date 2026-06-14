@@ -1,4 +1,4 @@
-enum SongRepeatMode {
+enum SongLoopMode {
   none,
   all,
   one

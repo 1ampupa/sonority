@@ -7,7 +7,7 @@ import 'package:sonority/utils/logger.dart';
 
 import 'package:sonority/core/songs/songs_manager.dart';
 import 'package:sonority/core/songs/song.dart';
-import 'package:sonority/core/enums/song_repeat_mode_enums.dart';
+import 'package:sonority/core/enums/song_loop_mode_enums.dart';
 
 class SongPlayer extends ChangeNotifier {
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -25,12 +25,11 @@ class SongPlayer extends ChangeNotifier {
   String _readableCurrentPosition = "0:00";
 
   bool _isShuffle = false;
-  SongRepeatMode _currentSongRepeatMode = SongRepeatMode.none;
+  SongLoopMode _currentSongLoopMode = SongLoopMode.all;
 
   Future<void> setup() async {
     await _audioPlayer.setVolume(0.15);
-
-    _upateRepeatMode();
+    await _audioPlayer.setReleaseMode(ReleaseMode.stop);
 
     _audioPlayer.onPlayerComplete.listen((_) => onSongComplete());
     _audioPlayer.onPositionChanged.listen((position) => updatePosition(position));
@@ -106,7 +105,11 @@ class SongPlayer extends ChangeNotifier {
     if (_currentIndex < songsManager.songsList.length - 1) {
       play(_currentIndex + 1);
     } else {
-      play(0);
+      if (_currentSongLoopMode == SongLoopMode.all) {
+        play(0);
+      } else {
+        stop();
+      }
     }
 
     notifyListeners();
@@ -116,7 +119,11 @@ class SongPlayer extends ChangeNotifier {
     if (_currentIndex > 0) {
       play(_currentIndex - 1);
     } else {
-      play(songsManager.songsList.length - 1); // Play the last song in the list
+      if (_currentSongLoopMode == SongLoopMode.all) {
+        play(songsManager.songsList.length - 1);
+      } else {
+        stop();
+      }
     }
 
     notifyListeners();
@@ -135,26 +142,22 @@ class SongPlayer extends ChangeNotifier {
   }
 
   void toggleRepeatMode() {
-    _currentSongRepeatMode = switch (_currentSongRepeatMode) {
-      SongRepeatMode.none => SongRepeatMode.all,
-      SongRepeatMode.all => SongRepeatMode.one,
-      SongRepeatMode.one => SongRepeatMode.none
+    _currentSongLoopMode = switch (_currentSongLoopMode) {
+      SongLoopMode.none => SongLoopMode.all,
+      SongLoopMode.all => SongLoopMode.one,
+      SongLoopMode.one => SongLoopMode.none
     };
-    _upateRepeatMode();
     notifyListeners();
   }
 
-  void _upateRepeatMode() async {
-    final releaseMode = switch (_currentSongRepeatMode) {
-      SongRepeatMode.one => ReleaseMode.loop,
-      _ => ReleaseMode.stop
-    };
-
-    await _audioPlayer.setReleaseMode(releaseMode);
-  }
-
   void onSongComplete() {
-    next();
+    if (_currentSongLoopMode == SongLoopMode.one) {
+      // Reset its position (Replay it won't work)
+      seekTo(0);
+      resume();
+    } else {
+      next();
+    }
   }
 
   void updatePosition(Duration currentPosition) async {
@@ -178,7 +181,7 @@ class SongPlayer extends ChangeNotifier {
 
   bool get isShuffle => _isShuffle;
 
-  SongRepeatMode get repeatMode => _currentSongRepeatMode;
+  SongLoopMode get repeatMode => _currentSongLoopMode;
 
   int get currentIndex => _currentIndex;
 

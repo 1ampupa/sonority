@@ -18,15 +18,20 @@ class _VolumeSliderState extends State<VolumeSlider> {
   Widget build(BuildContext context) {
     return SliderTheme(
       data: SliderThemeData(),
-      child: Slider(
-        value: widget._songPlayer.currentVolume,
-        min: 0,
-        max: 0.75,
-        onChanged: (newVolume) => {
-          setState(() {
-            widget._songPlayer.setVolume(newVolume);
-          })
-        },
+      child: ListenableBuilder(
+        listenable: widget._songPlayer,
+        builder: (context, child) {
+          return Slider(
+            value: widget._songPlayer.currentVolume,
+            min: 0,
+            max: widget._songPlayer.maxVolume,
+            onChanged: (newVolume) => {
+              setState(() {
+                widget._songPlayer.setVolume(newVolume);
+              })
+            },
+          );
+        }
       ),
     );
   }

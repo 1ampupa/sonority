@@ -11,14 +11,14 @@ import 'package:sonority/gui/widgets/playback/previous_track_button.dart';
 import 'package:sonority/gui/widgets/playback/repeat_modes_button.dart';
 import 'package:sonority/gui/widgets/playback/rewind_button.dart';
 import 'package:sonority/gui/widgets/playback/shuffle_button.dart';
+import 'package:sonority/gui/widgets/playback/volume_button.dart';
 import 'package:sonority/gui/widgets/playback/volume_slider.dart';
 
 class PlaybackPanelColumn extends StatefulWidget {
   const PlaybackPanelColumn({super.key});
 
   @override
-  State<PlaybackPanelColumn> createState() =>
-      _PlaybackPanelColumnState();
+  State<PlaybackPanelColumn> createState() => _PlaybackPanelColumnState();
 }
 
 class _PlaybackPanelColumnState extends State<PlaybackPanelColumn> {
@@ -30,20 +30,22 @@ class _PlaybackPanelColumnState extends State<PlaybackPanelColumn> {
 
   late final RewindButton _rewindButton = RewindButton(songPlayer: _songPlayer);
   late final FastForwardButton _fastForwardButton = FastForwardButton(songPlayer: _songPlayer);
-  
+
   late final PreviousTrackButton _previousTrackButton = PreviousTrackButton(songPlayer: _songPlayer);
   late final NextTrackButton _nextTrackButton = NextTrackButton(songPlayer: _songPlayer);
-  
+
   late final ShuffleButton _shuffleButton = ShuffleButton(songPlayer: _songPlayer);
   late final RepeatModesButton _repeatModesButton = RepeatModesButton(songPlayer: _songPlayer);
 
   late final PlaybackSlider _playbackSlider = PlaybackSlider(songPlayer: _songPlayer);
 
+  late final VolumeButton _volumeButton = VolumeButton(songPlayer: _songPlayer);
   late final VolumeSlider _volumeSlider = VolumeSlider(songPlayer: _songPlayer);
 
   // Settings
 
-  bool useMinimalLayout = false; // False = Set all layout-related settings to false
+  bool useMinimalLayout =
+      false; // False = Set all layout-related settings to false
 
   // Layout-related settings
   bool showSeekButtons = false;
@@ -140,18 +142,20 @@ class _PlaybackPanelColumnState extends State<PlaybackPanelColumn> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Visibility(
-          visible: showVolumeSlider,
-          child: Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
+        if (showVolumeSlider) ...[
+          _volumeButton,
+          Flexible(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 60,
+                maxWidth: 180,
+              ),
               child: _volumeSlider,
             ),
           ),
-        ),
+        ],
         IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () {},
           onLongPress: () => _songPlayer.stop(),
         ),
@@ -178,5 +182,4 @@ class _PlaybackPanelColumnState extends State<PlaybackPanelColumn> {
       },
     );
   }
-
 }

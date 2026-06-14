@@ -27,6 +27,10 @@ class SongPlayer extends ChangeNotifier {
   bool _isShuffle = false;
   SongLoopMode _currentSongLoopMode = SongLoopMode.all;
 
+  final double _maxVolume = 0.5;
+  late double lastKnownVolume;
+  bool isMuted = false;
+
   Future<void> setup() async {
     await _audioPlayer.setVolume(0.15);
     await _audioPlayer.setReleaseMode(ReleaseMode.stop);
@@ -169,8 +173,23 @@ class SongPlayer extends ChangeNotifier {
   }
   
   void setVolume(double volume) {
+    if (volume == 0) {
+      lastKnownVolume = currentVolume;
+      isMuted = true;
+    } else {
+      isMuted = false;
+    }
     _audioPlayer.setVolume(volume);
     notifyListeners();
+  }
+
+  void toggleMute() {
+    if (!isMuted) {
+      lastKnownVolume = currentVolume;
+      setVolume(0);
+    } else {
+      setVolume(lastKnownVolume);
+    }
   }
 
   // Getter methods
@@ -192,4 +211,6 @@ class SongPlayer extends ChangeNotifier {
   String get readableCurrentPosition => _readableCurrentPosition;
 
   double get currentVolume => _audioPlayer.volume;
+
+  double get maxVolume => _maxVolume;
 }

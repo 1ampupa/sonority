@@ -22,31 +22,34 @@ class _PlaybackSliderState extends State<PlaybackSlider> {
           pressedElevation: 12,
         ),
       ),
-      child: Slider(
-        value: widget._songPlayer.currentPosition.clamp(
-          0,
-          widget._songPlayer.currentSong.duration,
-        ),
-        min: 0.0,
-        max: widget._songPlayer.currentSong.duration,
-        onChangeStart: (_) {
-          _isPlayingBeforeDrag = widget._songPlayer.isPlaying;
-          if (widget._songPlayer.isPlaying) widget._songPlayer.pause();
-        },
-        onChanged: (newValue) {
-          setState(() {
-            widget._songPlayer.updatePosition(Duration(seconds: newValue.toInt()));
-          });
-        },
-        onChangeEnd: (finalValue) {
-          widget._songPlayer.seekTo(finalValue);
-          if (_isPlayingBeforeDrag) {
-            widget._songPlayer.resume();
-          }
-          setState(() {});
-        },
-        activeColor: Theme.of(context).colorScheme.primary,
-        thumbColor: Theme.of(context).colorScheme.secondary,
+      child: ListenableBuilder(
+        listenable: widget._songPlayer,
+        builder: (context, child) {
+          return Slider(
+            value: widget._songPlayer.currentPosition.clamp(
+              0,
+              widget._songPlayer.currentSong.duration,
+            ),
+            min: 0.0,
+            max: widget._songPlayer.currentSong.duration,
+            onChangeStart: (_) {
+              _isPlayingBeforeDrag = widget._songPlayer.isPlaying;
+              if (widget._songPlayer.isPlaying) widget._songPlayer.pause();
+            },
+            onChanged: (newValue) {
+              setState(() {
+                widget._songPlayer.seekTo(newValue);
+              });
+            },
+            onChangeEnd: (_) {
+              if (_isPlayingBeforeDrag) {
+                widget._songPlayer.resume();
+              }
+            },
+            activeColor: Theme.of(context).colorScheme.primary,
+            thumbColor: Theme.of(context).colorScheme.secondary,
+          );
+        }
       ),
     );
   }
